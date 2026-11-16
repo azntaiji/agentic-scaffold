@@ -17,7 +17,8 @@ Entry shape: **Status**, **Decision**, **Why**, **Alternatives**, **Consequences
 
 ## S-01 — Gate and version approval are human-only; agents tag approved releases
 **Status:** Settled
-Agents request gates and propose versions. Humans approve in `GATES.md`. At gate close
+Agents request gates and propose versions. Humans approve in `GATES.md`, by hand or by
+confirming the exact line the agent proposes after an explicit reply. At gate close
 the agent commits the release, creates the annotated tag `vX.Y.Z` for the approved
 version, and pushes it after `yeet` pushes the branch. Tags are never moved or deleted.
 

@@ -57,14 +57,16 @@ valid SemVer and maps cleanly onto every profile's notation. Precedence:
 ## Release sequence
 
 1. Agent: proposes the version in the gate request.
-2. Human: approves in `GATES.md` with `Version: X.Y.Z`, or `Version: none`.
+2. Human: approves with `Version: X.Y.Z` or `Version: none`, by editing `GATES.md` or
+   by replying `approved` and confirming the line the agent records.
 3. Agent: runs the gate close routine in `gates.md`, which applies the version, commits
    the release, tags it, and invokes the `yeet` skill.
 4. Human: confirms the `yeet` push.
 5. Agent: pushes the tag once the branch push has succeeded.
 
 For a fix between gates, the human adds an `R: APPROVED ... Version: X.Y.Z` line to
-`GATES.md` and the agent runs steps 1 and 5 through 9 of the gate close routine, using
+`GATES.md`, or replies `release X.Y.Z` and confirms the line the agent records (see
+`gates.md`). The agent then runs steps 1 and 5 through 9 of the gate close routine, using
 the commit message `chore(release): vX.Y.Z`.
 
 ## What the scaffold check verifies

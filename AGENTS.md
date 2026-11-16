@@ -55,7 +55,10 @@ them or you need the reasoning behind a past decision.
 
 These rules exist so that a human, not the agent, is accountable for scope and releases.
 
-- `GATES.md` is written by humans only. Never add or edit a line in it.
+- Gate and release decisions are the human's. Append a line to `GATES.md` only as
+  "Recording a decision" in `docs/process/gates.md` directs: an explicit decision in the
+  human's own message, then their confirmation of the exact line. Never edit or delete
+  an existing line.
 - Do not start work that belongs to phase N+1 until `GATES.md` shows GN as APPROVED.
 - Build only on decisions marked `Settled` or `Approved` in
   `docs/decisions/DECISIONS.md`. For `Proposed` or `Open`, stop and ask.
@@ -94,9 +97,9 @@ in STATUS.md, commit, and end your turn with:
 
 > Phase N complete. Gate GN awaiting approval from <names>. Needed from you: <list>.
 
-After the human records approval, run the gate close routine in the same document. It
-applies the approved version, updates the README, archives the phase, commits, tags the
-release, and pushes.
+When the human replies with a decision, record it as that document describes. After an
+approval, run the gate close routine in the same turn. It applies the approved version,
+updates the README, archives the phase, commits, tags the release, and pushes.
 
 ## Versioning and commits
 

@@ -41,7 +41,8 @@ Types used here: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci
 ## Gates
 
 Each phase ends with a gate request in STATUS.md. A named approver reviews the evidence
-and adds a line to GATES.md. Only humans edit that file. Details:
+and either adds a line to GATES.md or replies `approved` and confirms the line the agent
+proposes. Only humans make the decision. Details:
 [docs/process/gates.md](docs/process/gates.md).
 
 ## Decisions and questions

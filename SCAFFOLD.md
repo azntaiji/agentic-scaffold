@@ -1,6 +1,6 @@
 # Agentic coding scaffold
 
-Scaffold version: 1.3.0
+Scaffold version: 1.4.0
 
 A template repository for building software with coding agents in phases, with human
 approval between phases and deliberate control over what the agent has to read. It is
@@ -15,8 +15,10 @@ This file is for the human setting up a project. Agents do not need to read it.
 2. Start your agent in the repository and send the Phase 0 prompt below.
 3. Answer its questions. It writes the spec, picks a language profile, verifies the
    toolchain, and drafts the phases.
-4. When it requests gate G0, review and add an approval line to `GATES.md`.
-5. Tell it to close the gate. Start each later phase in a new session.
+4. When it requests gate G0, review the evidence and reply `approved`. The agent shows
+   the exact `GATES.md` line; confirm it, and the agent records it and closes the gate.
+   (You can still write the line by hand instead.)
+5. Start each later phase in a new session.
 
 ### Prompts
 
@@ -35,7 +37,17 @@ Any later session:
 Start the session as AGENTS.md describes and continue the current phase.
 ```
 
-After you approve a gate in GATES.md:
+Answering a gate request (the agent confirms the exact line with you first):
+
+```
+approved
+approved, version 0.4.0
+approved, no release
+rejected: <what must change>
+release 0.3.1
+```
+
+If you wrote the approval line in GATES.md by hand:
 
 ```
 G<N> is approved in GATES.md. Run the gate close routine.
@@ -47,7 +59,7 @@ G<N> is approved in GATES.md. Run the gate close routine.
 session start          read STATUS.md and the current phase; run the tests
   task loop            explore, plan, implement, verify, update STATUS.md, commit locally
 gate request           all checks, evidence, fresh-context review, proposed version
-human approval         one line in GATES.md
+human approval         reply `approved` and confirm, or write the line by hand
 gate close             apply version, update README, archive the phase, commit and
                        tag vX.Y.Z, invoke yeet
 human publishes        confirm the yeet push; the agent then pushes the tag
@@ -61,7 +73,7 @@ new session            next phase
 | `AGENTS.md` | Always-loaded rules and pointers | Human, with care |
 | `CLAUDE.md` | Imports `AGENTS.md`; Claude Code specifics | Human |
 | `STATUS.md` | Current working state, capped at 80 lines | Agent |
-| `GATES.md` | Gate approvals and approved versions | Human only |
+| `GATES.md` | Gate approvals and approved versions | Human, or agent after human confirms the line |
 | `VERSION`, `CHANGELOG.md` | SemVer source of truth and release notes | Agent, at gate close |
 | `README.md` | Project README with badges, features, roadmap | Agent, at gate close |
 | `docs/PLAN.md` | Phases, tasks, exit criteria, approvers | Agent drafts, human approves |
@@ -92,8 +104,10 @@ and fails when:
   whose `VERSION` differs (turn off with `check_tags` in `.scaffold.json`).
 
 Everything else in `AGENTS.md` is convention that the agent is asked to follow. In
-particular, the check cannot tell who edited `GATES.md`. For that, turn on branch
-protection and fill in `.github/CODEOWNERS`.
+particular, the check cannot tell who edited `GATES.md`, so an agent-recorded approval
+rests on the confirmation rule in `docs/process/gates.md`. If approvals must be
+hand-signed, drop the "By reply" route, turn on branch protection, and fill in
+`.github/CODEOWNERS`.
 
 ## Customizing
 

@@ -1,8 +1,9 @@
 # GATES
 
-Human-written ledger of gate approvals and approved versions. Agents read this file and
-never edit it. Add one line per decision, newest at the bottom. The last line for a gate
-wins.
+Ledger of gate approvals and approved versions. Every decision here is a human's: write
+it by hand, or reply to the agent and confirm the exact line it proposes (see
+`docs/process/gates.md`). Lines are only appended, never edited or deleted. Add one
+line per decision, newest at the bottom. The last line for a gate wins.
 
 Formats (replace the angle-bracket parts):
 
