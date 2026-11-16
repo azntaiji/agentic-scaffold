@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Consistency checks for the agentic coding scaffold.
 
-Verifies gate ordering, acceptance criteria, context budgets, documentation sprawl, and
-version agreement. Standard library only; runs on Python 3.9 or later.
+Verifies gate ordering, acceptance criteria, context budgets, documentation sprawl,
+version agreement, and release tags. Standard library only; runs on Python 3.9 or later.
 
 Usage:
     python3 scripts/check_scaffold.py [--root PATH] [--quiet]
@@ -16,6 +16,8 @@ import argparse
 import datetime
 import json
 import re
+import shutil
+import subprocess
 import sys
 import urllib.parse
 from pathlib import Path
@@ -71,6 +73,7 @@ DEFAULT_CONFIG = {
     "version_mirrors": [],
     "readme_version_badge": True,
     "readme_phase_badge": True,
+    "check_tags": True,
 }
 
 
@@ -445,6 +448,69 @@ def check_version(root: Path, config: dict, report: Report, approved_versions: l
         report.ok(f"version: {version} is consistent")
 
 
+def git(root: Path, *args: str) -> str | None:
+    """Run git in root. Returns stdout, or None when git fails."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), *args],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    return result.stdout if result.returncode == 0 else None
+
+
+def check_tags(root: Path, config: dict, report: Report, approved_versions: list[str]) -> None:
+    """Check that every vX.Y.Z tag is an approved version on a matching release commit."""
+    if not config.get("check_tags", True):
+        report.ok("tags: check disabled in .scaffold.json")
+        return
+    if shutil.which("git") is None:
+        report.ok("tags: git not available; skipped")
+        return
+    toplevel = git(root, "rev-parse", "--show-toplevel")
+    if toplevel is None or Path(toplevel.strip()).resolve() != root.resolve():
+        report.ok("tags: not the top of a git work tree; skipped")
+        return
+    listing = git(root, "tag", "--list", "v*")
+    if listing is None:
+        report.error("tags: 'git tag --list' failed")
+        return
+
+    approved = set(approved_versions)
+    tagged: set[str] = set()
+    before = len(report.errors)
+    for tag in listing.split():
+        version = tag[1:]
+        if not is_semver(version):
+            continue
+        tagged.add(version)
+        if version not in approved:
+            report.error(
+                f"tag {tag} names a version that is not APPROVED in GATES.md. "
+                "Tags are created only for approved releases."
+            )
+            continue
+        at_tag = git(root, "show", f"refs/tags/{tag}^{{commit}}:VERSION")
+        if at_tag is not None and at_tag.strip() != version:
+            report.error(
+                f"tag {tag} points at a commit whose VERSION is {at_tag.strip()}; "
+                "tag the release commit"
+            )
+
+    for version in approved_versions:
+        if version != "0.0.0" and version not in tagged:
+            report.warn(
+                f"approved version {version} has no tag v{version} here. If it was released, "
+                "push or fetch its tag (see docs/process/gates.md)."
+            )
+
+    if len(report.errors) == before:
+        report.ok(f"tags: {len(tagged)} release tag(s) consistent with GATES.md")
+
+
 def check_mirror(root: Path, mirror: dict, version: str, report: Report) -> None:
     rel = mirror.get("path", "")
     kind = mirror.get("kind", "")
@@ -596,6 +662,7 @@ def run_checks(root: Path) -> Report:
     config = load_config(root, report)
     phase, approved_versions = check_gates(root, report)
     check_version(root, config, report, approved_versions)
+    check_tags(root, config, report, approved_versions)
     check_readme_phase(root, config, report, phase)
     check_context(root, config, report)
     check_sprawl(root, config, report)

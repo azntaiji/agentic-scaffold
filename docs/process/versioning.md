@@ -9,7 +9,9 @@ The project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.h
 - Language files that also carry the version are mirrors. They are listed under
   `version_mirrors` in `.scaffold.json` and must agree with `VERSION`. The profile says
   which files and in which notation.
-- Git tags are `v` + the version, for example `v1.2.3`. Humans create them.
+- Git tags are annotated, `v` + the version, for example `v1.2.3`. The agent creates
+  and pushes them in the gate close routine, only for a version approved in `GATES.md`.
+  A pushed tag is never moved or deleted.
 - The public interface that SemVer protects is the one defined in `docs/SPEC.md`.
 
 ## Choosing the bump
@@ -56,16 +58,19 @@ valid SemVer and maps cleanly onto every profile's notation. Precedence:
 
 1. Agent: proposes the version in the gate request.
 2. Human: approves in `GATES.md` with `Version: X.Y.Z`, or `Version: none`.
-3. Agent: runs the gate close routine in `gates.md`, which applies the version and
-   invokes the `yeet` skill.
-4. Human: confirms the `yeet` commit and push, then creates and pushes the tag.
+3. Agent: runs the gate close routine in `gates.md`, which applies the version, commits
+   the release, tags it, and invokes the `yeet` skill.
+4. Human: confirms the `yeet` push.
+5. Agent: pushes the tag once the branch push has succeeded.
 
 For a fix between gates, the human adds an `R: APPROVED ... Version: X.Y.Z` line to
-`GATES.md` and the agent runs steps 1, 5, 6, and 7 of the gate close routine, using the
-summary `chore(release): vX.Y.Z`.
+`GATES.md` and the agent runs steps 1 and 5 through 9 of the gate close routine, using
+the commit message `chore(release): vX.Y.Z`.
 
 ## What the scaffold check verifies
 
 `VERSION` is valid SemVer and equals the last approved version in `GATES.md`; approved
 versions only increase; the newest `CHANGELOG.md` release heading equals `VERSION`; the
-README version badge and every mirror agree with it.
+README version badge and every mirror agree with it. Every `vX.Y.Z` tag names an
+approved version and sits on a commit whose `VERSION` is `X.Y.Z`; an approved version
+without a tag is a warning.

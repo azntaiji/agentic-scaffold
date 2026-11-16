@@ -34,7 +34,8 @@ Types used here: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci
 - The project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
   `VERSION` is the source of truth.
 - Versions change only at a gate or an approved between-gate release. The agent proposes
-  the bump; a human approves it in [GATES.md](GATES.md) and creates the git tag.
+  the bump; a human approves it in [GATES.md](GATES.md); the agent then commits the
+  release and creates and pushes the git tag.
 - Details: [docs/process/versioning.md](docs/process/versioning.md).
 
 ## Gates

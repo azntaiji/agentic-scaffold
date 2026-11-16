@@ -10,7 +10,9 @@ known state, and mutate them, so they pass at any phase of a real project.
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -266,6 +268,83 @@ class ContextTests(ScaffoldCase):
         readme = (self.tmp / "README.md").read_text(encoding="utf-8")
         self.write("README.md", readme.replace("phase-1%20test", "phase-0%20test"))
         self.assertErrorContains("phase badge shows 0")
+
+
+@unittest.skipUnless(shutil.which("git"), "git not available")
+class TagTests(ScaffoldCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.run_git("init", "-q")
+
+    def run_git(self, *args: str) -> None:
+        # Ignore the developer's global and system git config (signing, hooks, etc.).
+        env = dict(os.environ, GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1")
+        subprocess.run(
+            ["git", "-C", str(self.tmp), "-c", "user.name=Test", "-c", "user.email=t@example.com",
+             *args],
+            check=True,
+            capture_output=True,
+            env=env,
+        )
+
+    def commit(self, message: str) -> None:
+        self.run_git("add", "-A")
+        self.run_git("commit", "-q", "-m", message)
+
+    def tag(self, name: str) -> None:
+        self.run_git("tag", "-a", name, "-m", name)
+
+    def warnings(self) -> list[str]:
+        return cs.run_checks(self.tmp).warnings
+
+    def test_approved_release_tag_is_clean(self) -> None:
+        self.released()
+        self.commit("chore(release): v0.1.0 (close G0)")
+        self.tag("v0.1.0")
+        self.assertClean()
+        self.assertFalse(any("has no tag" in w for w in self.warnings()))
+
+    def test_tag_for_unapproved_version_fails(self) -> None:
+        self.released()
+        self.commit("chore(release): v0.1.0 (close G0)")
+        self.tag("v0.1.0")
+        self.tag("v0.2.0")
+        self.assertErrorContains("tag v0.2.0 names a version that is not APPROVED")
+
+    def test_tag_on_wrong_commit_fails(self) -> None:
+        self.commit("chore: start")
+        self.tag("v0.1.0")
+        self.released()
+        self.commit("chore(release): v0.1.0 (close G0)")
+        self.assertErrorContains("tag v0.1.0 points at a commit whose VERSION is 0.0.0")
+
+    def test_approved_version_without_tag_only_warns(self) -> None:
+        self.released()
+        self.commit("chore(release): v0.1.0 (close G0)")
+        self.assertClean()
+        self.assertTrue(any("0.1.0 has no tag" in w for w in self.warnings()))
+
+    def test_non_release_tags_are_ignored(self) -> None:
+        self.commit("chore: start")
+        self.tag("vnext")
+        self.assertClean()
+
+    def test_check_can_be_disabled(self) -> None:
+        self.write(".scaffold.json", json.dumps({"check_tags": False}))
+        self.commit("chore: start")
+        self.tag("v9.9.9")
+        self.assertClean()
+
+    def test_directory_inside_another_repository_is_skipped(self) -> None:
+        self.commit("chore: start")
+        self.tag("v9.9.9")
+        nested = self.tmp / "nested"
+        nested.mkdir()
+        for name in ("AGENTS.md", "CLAUDE.md", "STATUS.md", "GATES.md", "VERSION",
+                     "CHANGELOG.md", "README.md", ".scaffold.json"):
+            shutil.copy(self.tmp / name, nested / name)
+        shutil.copytree(self.tmp / "docs", nested / "docs")
+        self.assertEqual(cs.run_checks(nested).errors, [])
 
 
 class SemverTests(unittest.TestCase):

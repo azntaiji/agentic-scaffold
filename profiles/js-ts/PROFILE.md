@@ -46,7 +46,7 @@ Suggested scripts: `"format": "prettier --write ."`,
 
 Set the mirror with `npm version X.Y.Z --no-git-tag-version`, which also updates the
 lockfile. Never run `npm version` without that flag: it commits and tags on its own, and
-tagging is reserved for humans.
+tagging happens only in the gate close routine, after the release commit.
 
 ## Conventions
 

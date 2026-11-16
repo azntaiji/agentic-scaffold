@@ -1,6 +1,6 @@
 # Agentic coding scaffold
 
-Scaffold version: 1.2.0
+Scaffold version: 1.3.0
 
 A template repository for building software with coding agents in phases, with human
 approval between phases and deliberate control over what the agent has to read. It is
@@ -48,8 +48,9 @@ session start          read STATUS.md and the current phase; run the tests
   task loop            explore, plan, implement, verify, update STATUS.md, commit locally
 gate request           all checks, evidence, fresh-context review, proposed version
 human approval         one line in GATES.md
-gate close             apply version, update README, archive the phase, invoke yeet
-human publishes        confirm the yeet commit and push, then git tag vX.Y.Z
+gate close             apply version, update README, archive the phase, commit and
+                       tag vX.Y.Z, invoke yeet
+human publishes        confirm the yeet push; the agent then pushes the tag
 new session            next phase
 ```
 
@@ -86,7 +87,9 @@ and fails when:
 - `AGENTS.md`, `CLAUDE.md`, or `STATUS.md` exceeds its size budget, or `CLAUDE.md`
   imports state or archive files;
 - an unlisted Markdown file appears in the repository root, or a report-style file
-  appears under `docs/`.
+  appears under `docs/`;
+- a `vX.Y.Z` tag names a version that is not approved in GATES.md, or sits on a commit
+  whose `VERSION` differs (turn off with `check_tags` in `.scaffold.json`).
 
 Everything else in `AGENTS.md` is convention that the agent is asked to follow. In
 particular, the check cannot tell who edited `GATES.md`. For that, turn on branch
@@ -98,7 +101,11 @@ protection and fill in `.github/CODEOWNERS`.
 - **A different publish skill:** replace `yeet` in `AGENTS.md`,
   `docs/process/gates.md`, and `docs/process/versioning.md`. Whatever you use must be
   invocable by the agent, accept a commit summary, ask the human to confirm, then
-  commit the working tree and push.
+  commit the working tree and push. When there is nothing to commit it must still offer
+  to push unpushed commits, because at a release the agent commits and tags first and
+  pushes the tag only after the branch push.
+- **Keeping tagging human-only:** restore the old rule in `AGENTS.md`, S-01 in
+  `docs/decisions/DECISIONS.md`, and steps 6–9 of the gate close routine.
 - **Phase branches instead of trunk:** decide D-03 in `docs/decisions/DECISIONS.md`.
 - **Keeping raw output as audit evidence:** remove the `artifacts/` lines from
   `.gitignore`.

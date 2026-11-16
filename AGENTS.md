@@ -63,8 +63,10 @@ These rules exist so that a human, not the agent, is accountable for scope and r
   independent work, then stop and ask.
 - In `docs/acceptance.json`, change only `passes` and `evidence`. New or reworded
   criteria need human approval.
-- Never create git tags, publish packages, or change `VERSION` without an approved
-  version in `GATES.md`.
+- Never publish packages or change `VERSION` without an approved version in `GATES.md`.
+- Create and push a git tag only as the release routine in `docs/process/gates.md`
+  directs: `vX.Y.Z` for a version APPROVED in `GATES.md`, on its release commit. Never
+  move, delete, or re-push an existing tag.
 
 A checkpoint is a smaller stop inside a phase, for a decision or an RFI. Ask, then carry
 on with unrelated tasks in the same phase while you wait.
@@ -93,7 +95,8 @@ in STATUS.md, commit, and end your turn with:
 > Phase N complete. Gate GN awaiting approval from <names>. Needed from you: <list>.
 
 After the human records approval, run the gate close routine in the same document. It
-applies the approved version, updates the README, archives the phase, and commits.
+applies the approved version, updates the README, archives the phase, commits, tags the
+release, and pushes.
 
 ## Versioning and commits
 
@@ -102,8 +105,9 @@ applies the approved version, updates the README, archives the phase, and commit
 - Commit locally at the end of each task: `git add -A`, then `git commit` with a
   Conventional Commits 1.0.0 message. No co-author or attribution trailers.
 - Never push, force-push, or rebase yourself. Pushing happens only at gate close,
-  through the `yeet` skill, after the gate is APPROVED in `GATES.md`. Leave the gate
-  close changes uncommitted and invoke `yeet` as the last action of your turn.
+  through the `yeet` skill, after the gate is APPROVED in `GATES.md`. Invoke `yeet` as
+  the last skill of your turn. One exception: after `yeet` has pushed a release, push
+  its tag with `git push origin vX.Y.Z`.
 - Keep `CHANGELOG.md` `[Unreleased]` current as you complete user-visible changes.
 
 ## README

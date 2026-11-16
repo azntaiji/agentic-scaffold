@@ -15,9 +15,11 @@ Entry shape: **Status**, **Decision**, **Why**, **Alternatives**, **Consequences
 
 ---
 
-## S-01 — Gate approval, version approval, and tagging are human-only
+## S-01 — Gate and version approval are human-only; agents tag approved releases
 **Status:** Settled
-Agents request gates and propose versions. Humans approve in `GATES.md` and create tags.
+Agents request gates and propose versions. Humans approve in `GATES.md`. At gate close
+the agent commits the release, creates the annotated tag `vX.Y.Z` for the approved
+version, and pushes it after `yeet` pushes the branch. Tags are never moved or deleted.
 
 ## S-02 — Semantic Versioning 2.0.0 with `VERSION` as the source of truth
 **Status:** Settled
@@ -27,7 +29,9 @@ See `docs/process/versioning.md`.
 **Status:** Settled
 Agents commit at each task boundary and never push directly. At gate close the agent
 invokes the `yeet` skill, which asks the human to confirm before it commits and pushes.
-The human can also run `/yeet` at any time for a remote backup.
+The one direct push an agent makes is the release tag (S-01), and only after `yeet` has
+pushed the release commit. The human can also run `/yeet` at any time for a remote
+backup.
 
 ---
 

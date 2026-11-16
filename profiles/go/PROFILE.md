@@ -32,7 +32,7 @@ beside the code as `*_test.go`.
 
 Go modules are versioned by git tags of the form `vX.Y.Z`, which is the same tag this
 scaffold already uses. `VERSION` stays the source of truth for the changelog and README,
-and the tag the human creates must match it. There is no mirror file by default.
+and the tag the agent creates at release must match it. There is no mirror file by default.
 
 ```json
 "profiles": ["go"],

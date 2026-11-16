@@ -65,22 +65,29 @@ Start by reading `GATES.md`. If there is no APPROVED line for the gate, stop.
 4. Rewrite `STATUS.md` for phase N+1: new phase number and name, next tasks, empty
    evidence table, `Gate: G<N+1> not requested`.
 5. Run `python3 scripts/check_scaffold.py`. It must pass.
-6. If a version was released, give the human the tag commands to run once the push
-   succeeds:
+6. If the approved version is `none`, skip to step 8. Otherwise commit the release
+   yourself: `git add -A`, then `git commit -m "chore(release): vX.Y.Z (close G<N>)"`.
+7. Tag the release commit. First confirm the tag exists nowhere:
+   `git tag --list vX.Y.Z` and `git ls-remote --tags origin vX.Y.Z` (skip the second if
+   there is no remote) must both print nothing. If either prints a tag, stop and report;
+   never move or delete a tag. Then run:
 
    ```
    git tag -a vX.Y.Z -m "vX.Y.Z"
-   git push origin vX.Y.Z
    ```
 
-7. Do not commit the changes yourself. As the last action of your turn, invoke the
-   `yeet` skill with the summary `chore(release): vX.Y.Z (close G<N>)`, or
-   `chore(gate): close G<N>` when there is no release. It asks the human to confirm,
-   then commits these changes and pushes the whole phase.
+8. Invoke the `yeet` skill as the last skill of your turn. With a release it finds no
+   changes and asks the human whether to push the unpushed commits. Without a release,
+   pass the summary `chore(gate): close G<N>`; it asks the human, then commits and
+   pushes.
+9. Release only: run `git status -sb`. If the branch is not ahead of its remote, `yeet`
+   pushed it; run `git push origin vX.Y.Z`. If the push was declined or failed, leave
+   the tag local and tell the human to run `git push origin vX.Y.Z` after pushing.
 
 Invoke `yeet` last because it may switch the session to a smaller model for the rest of
-the turn. If the skill is unavailable or the harness blocks it, ask the human to run
-`/yeet`; do not reproduce its push with other commands.
+the turn; step 9 is deliberately two short commands. If the skill is unavailable or the
+harness blocks it, ask the human to run `/yeet`; do not reproduce its push with other
+commands.
 
 The next phase starts in a new session.
 
@@ -88,6 +95,7 @@ The next phase starts in a new session.
 
 `scripts/check_scaffold.py` fails when the phase in STATUS.md is ahead of the approved
 gates, when an approved gate has failing criteria, when `VERSION` differs from the last
-approved version, or when the ledger is malformed. It cannot tell who wrote a line. To
+approved version, when the ledger is malformed, or when a `vX.Y.Z` tag names a version
+that is not approved or sits on a commit whose `VERSION` differs. It cannot tell who wrote a line. To
 enforce that only approvers change `GATES.md`, protect the default branch and list the
 file in `.github/CODEOWNERS`.
