@@ -37,7 +37,8 @@ Mirror kinds: `pyproject`, `python_dunder`, `package_json`, `regex`.
 
 ## Conventions
 
-<Only rules that differ from the language's defaults.>
+<Only rules that differ from the language's defaults. Put a longer guide in its own file
+beside this one and link it. Ready-to-copy source files go in `starter/`.>
 
 ## Gotchas
 

@@ -1,6 +1,6 @@
 # Agentic coding scaffold
 
-Scaffold version: 1.4.0
+Scaffold version: 1.5.0
 
 A template repository for building software with coding agents in phases, with human
 approval between phases and deliberate control over what the agent has to read. It is
@@ -82,7 +82,7 @@ new session            next phase
 | `docs/decisions/`, `docs/RFIS.md` | Decisions and open questions | Both |
 | `docs/process/` | Procedures, read on demand | Human |
 | `docs/archive/` | Finished phases, cold storage | Agent, at gate close |
-| `profiles/` | Per-language commands, versioning, CI | Human |
+| `profiles/` | Per-language commands, versioning, CI, guides, starter files | Human |
 | `scripts/check_scaffold.py` | Enforcement, standard-library Python 3.9+ | Human |
 | `.scaffold.json` | Limits, allowlists, version mirrors | Human |
 

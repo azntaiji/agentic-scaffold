@@ -23,7 +23,8 @@ Each phase section uses this shape:
   - [ ] Choose the language profile. Set `profiles` and `version_mirrors` in
         `.scaffold.json`. Delete unused profile directories.
   - [ ] Fill the Commands table in `AGENTS.md` and run every command to prove it works.
-  - [ ] Copy the profile's `ci.yml` to `.github/workflows/ci.yml`.
+  - [ ] Copy the profile's `ci.yml` to `.github/workflows/ci.yml` and its `starter/`
+        files into place; create the layout the profile describes.
   - [ ] Draft the remaining phases below and their criteria in `docs/acceptance.json`.
   - [ ] Record design choices in `docs/decisions/DECISIONS.md` as `Proposed` and open
         questions in `docs/RFIS.md`.
