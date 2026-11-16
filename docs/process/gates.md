@@ -6,7 +6,9 @@ a decision or an RFI; the agent asks and continues with unrelated tasks while it
 
 ## Requesting a gate (agent)
 
-1. Run every command in the AGENTS.md Commands table, including the scaffold check.
+1. Run every command in the AGENTS.md Commands table, including the scaffold check,
+   plus any release preflight the profile requires (for example Go's
+   `make release-check`).
    Save raw output under `artifacts/phase-N/` and add one line per check to the
    STATUS.md Evidence table.
 2. For each exit criterion of the phase in `docs/acceptance.json`, run its `verify`
@@ -109,7 +111,8 @@ Start by reading `GATES.md`. If there is no APPROVED line for the gate, stop.
    retired decisions and RFIs.
 4. Rewrite `STATUS.md` for phase N+1: new phase number and name, next tasks, empty
    evidence table, `Gate: G<N+1> not requested`.
-5. Run `python3 scripts/check_scaffold.py`. It must pass.
+5. Run `python3 scripts/check_scaffold.py`, plus any gate-close step the profile
+   requires (for example Go's `make release-notes`). They must pass.
 6. If the approved version is `none`, skip to step 8. Otherwise commit the release
    yourself: `git add -A`, then `git commit -m "chore(release): vX.Y.Z (close G<N>)"`.
 7. Tag the release commit. First confirm the tag exists nowhere:

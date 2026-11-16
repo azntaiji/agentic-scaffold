@@ -1,5 +1,5 @@
 {
-  "scaffold_version": "1.5.0",
+  "scaffold_version": "1.6.0",
   "profiles": [],
   "limits": {
     "agents_md_max_lines": 150,

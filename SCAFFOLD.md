@@ -1,6 +1,6 @@
 # Agentic coding scaffold
 
-Scaffold version: 1.5.0
+Scaffold version: 1.6.0
 
 A template repository for building software with coding agents in phases, with human
 approval between phases and deliberate control over what the agent has to read. It is
