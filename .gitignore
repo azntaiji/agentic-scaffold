@@ -13,4 +13,7 @@ artifacts/*
 .idea/
 .vscode/
 
+# Cache
+__pycache__/
+
 # Add the lines from profiles/<lang>/PROFILE.md below.
